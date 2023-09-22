@@ -14,7 +14,11 @@ using OrdinaryDiffEq, StaticArrays
 
 const RELTOL::Float64, ABSTOL::Float64 = 1e-5, 1e-5
 const MAXITERS::Int64 = Int(1e7)
-const ALG = Rodas5P
+
+# Different alg: 
+# Rodas5P - for stiff systems
+# Tsit5 - 
+const ALG = Tsit5
 
 ########################################################################
 
@@ -27,15 +31,15 @@ const ALG = Rodas5P
 `p` : vector of parameters, `p=(γ, μ, ε, ω_teach)`
 
 `t` : current time"""
-function Hopf_adaptive(u::SVector{3, Float32}, p, t::Float32)
+function Hopf_adaptive(u, p, t)
     x, y, ω = u
     γ, μ, ε, ω_teach = p
     r = sqrt(x^2 + y^2); r_2 = r^2
     Fₜ = cos(ω_teach*t)
-    return SVector{Float32}(
+    return SA[
         γ*(μ-r_2)*x - ω*y + ε*Fₜ, 
         γ*(μ-r_2)*y + ω*x,
-        -ε*Fₜ*y/r)
+        -ε*Fₜ*y/r]
 end
 
 
@@ -73,7 +77,7 @@ end
 
 ########################################################################
 
-function Hopf_adaptive_integrate(U₀, t_span, param; reltol=RELTOL, abstol=ABSTOL, maxiters=MAXITERS, check_success=False)
+function Hopf_adaptive_integrate(U₀, t_span, param; reltol=RELTOL, abstol=ABSTOL, maxiters=MAXITERS, check_success=false)
     prob = ODEProblem(Hopf_adaptive, U₀, t_span, param)
     sol = solve(prob, ALG(), reltol=reltol, abstol=abstol, maxiters=maxiters)
 
