@@ -1,5 +1,5 @@
 #=
-
+Shows the process of learning the freq of incoming oscillation
 =#
 
 include("../src/oscillator_model.jl")

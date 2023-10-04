@@ -8,8 +8,8 @@ using Dates
 
 function elapsed_time_string(time_ns)
     seconds = time_ns/1e9
-    munutes = seconds/60
-    hours = munutes/60
+    munutes = round(seconds/60, digits=5)
+    hours = round(munutes/60, digits=5)
     return "Elapsed time: $(seconds)s = $(munutes)m = $(hours)h"
 end
 

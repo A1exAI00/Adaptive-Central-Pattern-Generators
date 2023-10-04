@@ -19,7 +19,7 @@ function mean_of_tail(seq, tail_fraction)
     # TODO: try type seq::Union(Vector{Real}, SVector{Real}) - will work? 
     tail_start_index = round(Int, tail_fraction*length(seq))
     tail_seq = seq[tail_start_index:end]
-    return mean(Float32, tail_seq)
+    return mean(tail_seq)
 end
 
 """Checks if any value of `seq` is out of `bounds`
