@@ -1,5 +1,6 @@
 #=
 Shows the bifurcation diagram of learned freq against incoming freq
+Result: A linear function ω_learn = ω_teach
 =#
 
 include("../src/oscillator_model.jl")
@@ -23,12 +24,12 @@ print_elapsed_time = true
 
 # Dynamical system parameters
 γ, μ, ε = 1.0, 1.0, 0.9
-ω_teach_1, ω_teach_2, ω_teach_n = 1, 40, 100
+ω_teach_1, ω_teach_2, ω_teach_n = 1.0, 40.0, 100
 ω_teach_range = range(ω_teach_1, ω_teach_2, ω_teach_n)
 
 # Initial values
 x₀, y₀ = 1.0, 0.0
-ω₀_1, ω₀_2, ω₀_n = 1, 20, 10
+ω₀_1, ω₀_2, ω₀_n = 1.0, 20.0, 10
 ω₀_range = range(ω₀_1, ω₀_2, ω₀_n)
 
 # Time span
