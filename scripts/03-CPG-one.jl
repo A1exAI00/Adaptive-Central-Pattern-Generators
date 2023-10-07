@@ -1,5 +1,7 @@
 #=
-Performs the CPG learning to a single freq signal
+Выполняет CPG обучение для однокомпонентного сигнала
+Результат: нейрон удачно обучился на частоту и амплитуду входного 
+    однокомпонентного сигнала
 =#
 
 include("../src/oscillator_model.jl")
@@ -16,7 +18,6 @@ PLOT_SAVING_DIR = "generated"; println(pwd())
 PLOT_FILENAME = "first_order_CPG_learning"
 PLOT_PX_PER_UNIT_PNG = 2
 
-print_loop_progress = true
 print_elapsed_time = true
 
 ########################################################################
@@ -50,6 +51,8 @@ t_SPAN = [t₀, t₁]
 
 ########################################################################
 
+t_calculation_start = time_ns()
+
 # Integration
 solution = CPG_integrate(U₀, t_SPAN, system_param)
 x_sol = solution[1,:]
@@ -57,6 +60,9 @@ y_sol = solution[2,:]
 ω_sol = solution[3,:]
 α_sol = solution[4,:]
 t_sol = solution.t
+
+elapsed_time = elapsed_time_string(time_ns()-t_calculation_start)
+print_elapsed_time && println(elapsed_time)
 
 ########################################################################
 
