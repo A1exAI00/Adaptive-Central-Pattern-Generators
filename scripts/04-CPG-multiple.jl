@@ -1,6 +1,6 @@
 #=
 Выполняет CPG обучение для многокомпонентного сигнала (N=3)
-Результат: 
+Результат: Получилось обучить сеть из 3 осцилляторов
 =#
 
 include("../src/oscillator_model.jl")
@@ -14,12 +14,10 @@ using StaticArrays, CairoMakie
 # Plot settings
 PLOT_RES = (1000, 1000)
 PLOT_SAVING_DIR = "generated"; println(pwd())
-PLOT_FILENAME = "higher_order_CPG_learning"
+PLOT_FILENAME = "04-higher_order_CPG_learning"
 PLOT_PX_PER_UNIT_PNG = 2
 
 print_elapsed_time = true
-
-
 
 ########################################################################
 

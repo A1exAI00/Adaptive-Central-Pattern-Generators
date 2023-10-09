@@ -14,7 +14,7 @@ using StaticArrays, CairoMakie
 # Plot settings
 PLOT_RES = (1000, 800)
 PLOT_SAVING_DIR = "generated"; println(pwd())
-PLOT_FILENAME = "ω(ω_learn)_bif_diagram"
+PLOT_FILENAME = "02-ω(ω_learn)_bif_diagram"
 PLOT_PX_PER_UNIT_PNG = 2
 
 print_loop_progress = true
@@ -24,8 +24,8 @@ print_elapsed_time = true
 
 # Dynamical system parameters
 γ, μ, ε = 1.0, 1.0, 0.9
-ω_teach_1, ω_teach_2, ω_teach_n = 1.0, 40.0, 100
-ω_teach_range = range(ω_teach_1, ω_teach_2, ω_teach_n)
+Ω_teach_1, Ω_teach_2, Ω_teach_n = 1.0, 40.0, 100
+Ω_teach_range = range(Ω_teach_1, Ω_teach_2, Ω_teach_n)
 
 # Initial values
 x₀, y₀ = 1.0, 0.0
@@ -44,7 +44,7 @@ t_SPAN = [t₀, t₁]
 t_calculation_start = time_ns()
 
 # Repeated integration for every ω_teach in a range
-for (i,ω_teach) in enumerate(ω_teach_range)
+for (i,ω_teach) in enumerate(Ω_teach_range)
     print_loop_progress && println("ω_teach=$ω_teach, $i/$ω_teach_n")
 
     for (j,ω₀) in enumerate(ω₀_range)

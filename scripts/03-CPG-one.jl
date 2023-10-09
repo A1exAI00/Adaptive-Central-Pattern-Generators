@@ -15,7 +15,7 @@ using StaticArrays, CairoMakie
 # Plot settings
 PLOT_RES = (1000, 1000)
 PLOT_SAVING_DIR = "generated"; println(pwd())
-PLOT_FILENAME = "first_order_CPG_learning"
+PLOT_FILENAME = "03-first_order_CPG_learning"
 PLOT_PX_PER_UNIT_PNG = 2
 
 print_elapsed_time = true
@@ -24,30 +24,22 @@ print_elapsed_time = true
 
 # Dynamical system parameters
 γ, μ, ε, η, N = 1.0, 1.0, 0.9, 0.5, 1
-ω_teach = [10.0]; A_teach = [3.0]
-
-@assert length(ω_teach) == N "length of `ω_teach` is not equal `N`"
-@assert length(A_teach) == N "length of `A_teach` is not equal `N`"
-
-system_param = [γ, μ, ε, η, N]
-append!(system_param, ω_teach); append!(system_param, A_teach)
-system_param = SVector{length(system_param)}(system_param)
+Ω_teach = [10.0]; A_teach = [3.0]
+system_param = SA[γ, μ, ε, η, N, Ω_teach..., A_teach...]
 
 # Initial values
-x₀, y₀ = 1.0, 0.0 # TODO: нужно несколько начальных иксов и начальных игреков
+x₀, y₀ = 1.0, 0.0
 ω₀ = [20.0]; α₀ = [1.0]
-
-# TODO: надо так же добавить проверки на иксы и игреки
-@assert length(ω₀) == N "length of `ω₀` is not equal `N`"
-@assert length(α₀) == N "length of `α₀` is not equal `N`"
-
-U₀ = [x₀, y₀]
-append!(U₀, ω₀); append!(U₀, α₀)
-U₀ = SVector{length(U₀)}(U₀)
+U₀ = SA[x₀, y₀, ω₀..., α₀...]
 
 # Time span
 t₀, t₁ = 0.0, 500.0
 t_SPAN = [t₀, t₁]
+
+@assert length(Ω_teach) == N "length of `Ω_teach` is not equal `N`"
+@assert length(A_teach) == N "length of `A_teach` is not equal `N`"
+@assert length(ω₀) == N "length of `ω₀` is not equal `N`"
+@assert length(α₀) == N "length of `α₀` is not equal `N`"
 
 ########################################################################
 

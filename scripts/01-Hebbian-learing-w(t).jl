@@ -13,14 +13,14 @@ using StaticArrays, CairoMakie
 # Plot settings
 PLOT_RES = (1000, 800)
 PLOT_SAVING_DIR = "generated"; println(pwd())
-PLOT_FILENAME = "ω_learning"
+PLOT_FILENAME = "01-ω_learning"
 PLOT_PX_PER_UNIT_PNG = 2
 
 ########################################################################
 
 # Dynamical system parameters
-γ, μ, ε, ω_teach = 1.0, 1.0, 0.9, 30
-system_param = SA[γ, μ, ε, ω_teach]
+γ, μ, ε, Ω_teach = 1.0, 1.0, 0.9, 30
+system_param = SA[γ, μ, ε, Ω_teach]
 
 # Initial values
 x₀, y₀, ω₀ = 1.0, 0.0, 40.0
