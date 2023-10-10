@@ -1,5 +1,6 @@
 #=
-Shows the process of learning the freq of incoming oscillation
+Обучение Хеббиана адаптивного осциллятора Хопфа.
+Модель обучается на частоту внешнего сигнала
 =#
 
 include("../src/oscillator_model.jl")
@@ -10,7 +11,7 @@ using StaticArrays, CairoMakie
 
 ########################################################################
 
-# Plot settings
+# Настройки генерируемого графика
 PLOT_RES = (1000, 800)
 PLOT_SAVING_DIR = "generated"; println(pwd())
 PLOT_FILENAME = "01-ω_learning"
@@ -18,21 +19,21 @@ PLOT_PX_PER_UNIT_PNG = 2
 
 ########################################################################
 
-# Dynamical system parameters
+# Постоянные параметры системы
 γ, μ, ε, Ω_teach = 1.0, 1.0, 0.9, 30
 system_param = SA[γ, μ, ε, Ω_teach]
 
-# Initial values
+# Начальные условия системы
 x₀, y₀, ω₀ = 1.0, 0.0, 40.0
 U₀ = SA[x₀, y₀, ω₀]
 
-# Time span
+# Время интегрирования
 t₀, t₁ = 0.0, 1200.0
 t_SPAN = [t₀, t₁]
 
 ########################################################################
 
-# Integration
+# Интегрирование системы
 solution = Hopf_adaptive_integrate(U₀, t_SPAN, system_param)
 x_sol = solution[1,:]
 y_sol = solution[2,:]
