@@ -9,6 +9,7 @@ Central Pattern Generator (CPG) из статьи
 
 #using Statistics: mean
 using OrdinaryDiffEq, StaticArrays, Interpolations
+include("../src/misc_tools.jl")
 
 ########################################################################
 
@@ -141,17 +142,14 @@ function CPG2_model(u, p, t)
 end
 
 function CPG2_itp_model(u, p, t)
-    γ, μ, ε, η, τ, N, t₀, t₁, tₙ = p[1:10]
+    γ, μ, ε, η, τ, N, T_itp, P_teach_itp = p
     N = Int(N)
-    Ps = p[11:end]
-    
-    Δt = (t₁-t₀)/tₙ
-    i_curr_t = floor(Int, (t-t₀)/Δt) 
-    P_teach = Ps[i_curr_t] + (Ps[i_curr_t+1]-Ps[i_curr_t])/Δt * (t-Δt*i_curr_t-t₀)
+    t_ipt = mod(t, T_itp)
 
     xᵢ, yᵢ, ωᵢ, αᵢ, ϕᵢ = u[0N+1:1N], u[1N+1:2N], u[2N+1:3N], u[3N+1:4N], u[4N+1:end]
 
     Q_learned = sum(xᵢ.*αᵢ)
+    P_teach = P_teach_itp(t_ipt)
     Fₜ = P_teach - Q_learned
     R₁ = sign(xᵢ[1])*acos(-yᵢ[1]/sqrt((xᵢ[1])^2 + (yᵢ[1])^2))
 
@@ -181,7 +179,7 @@ function Hopf_adaptive_integrate(U₀, t_span, param; reltol=RELTOL, abstol=ABST
     return sol
 end
 
-function CPG_integrate(U₀, t_span, param; reltol=RELTOL, abstol=ABSTOL, maxiters=MAXITERS, check_success=false)
+function CPG1_integrate(U₀, t_span, param; reltol=RELTOL, abstol=ABSTOL, maxiters=MAXITERS, check_success=false)
     prob = ODEProblem(CPG1_model, U₀, t_span, param)
     sol = solve(prob, ALG(), reltol=reltol, abstol=abstol, maxiters=maxiters)
 
@@ -190,7 +188,7 @@ function CPG_integrate(U₀, t_span, param; reltol=RELTOL, abstol=ABSTOL, maxite
     return sol
 end
 
-function super_CPG_integrate(U₀, t_span, param; reltol=RELTOL, abstol=ABSTOL, maxiters=MAXITERS, check_success=false)
+function CPG2_integrate(U₀, t_span, param; reltol=RELTOL, abstol=ABSTOL, maxiters=MAXITERS, check_success=false)
     prob = ODEProblem(CPG2_model, U₀, t_span, param)
     sol = solve(prob, ALG(), reltol=reltol, abstol=abstol, maxiters=maxiters)
 
@@ -199,7 +197,7 @@ function super_CPG_integrate(U₀, t_span, param; reltol=RELTOL, abstol=ABSTOL, 
     return sol
 end
 
-function super_CPG_itp_integrate(U₀, t_span, param; reltol=RELTOL, abstol=ABSTOL, maxiters=MAXITERS, check_success=false)
+function CPG2_itp_integrate(U₀, t_span, param; reltol=RELTOL, abstol=ABSTOL, maxiters=MAXITERS, check_success=false)
     prob = ODEProblem(CPG2_itp_model, U₀, t_span, param)
     sol = solve(prob, ALG(), reltol=reltol, abstol=abstol, maxiters=maxiters)
 

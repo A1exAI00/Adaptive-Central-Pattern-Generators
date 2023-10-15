@@ -7,14 +7,14 @@ include("../src/oscillator_model.jl")
 include("../src/time_series_tools.jl")
 include("../src/misc_tools.jl")
 
-using StaticArrays, CairoMakie
+using StaticArrays, CairoMakie, Interpolations
 
 ########################################################################
 
 # Настройки генерируемого графика
 PLOT_RES = (1000, 1000)
 PLOT_SAVING_DIR = "generated"; println(pwd())
-PLOT_FILENAME = "06-super_CPG_noise"
+PLOT_FILENAME = "06-CPG2_itp"
 PLOT_PX_PER_UNIT_PNG = 2
 
 # Настройки вывода прогресса
@@ -23,7 +23,7 @@ print_elapsed_time = true
 ########################################################################
 
 # Время интегрирования
-t₀, t₁ = 0.0, 1_500.0
+t₀, t₁ = 0.0, 3_000.0
 t_SPAN = [t₀, t₁]
 
 # Постоянные параметры системы
@@ -32,17 +32,18 @@ t_SPAN = [t₀, t₁]
 A_teach = [0.8, 1.0,-1.4,-0.5]
 Φ_teach = [0.0, 0.0, 0.0, 0.0]
 
-tₙ = 1_000_000
-t_range = range(t₀, t₁, tₙ)
-P_teach = zeros(tₙ)
-for (i,t) in enumerate(t_range)
-    P_teach[i] = sum(A_teach.*cos.(Ω_teach.*t .+ Φ_teach))
-end
+# Создание функции интерполяции шумного обучающего сигнала
+# Эта функция потом пойдет как параметр системы
+T_itp, tₙ = 2π/minimum(Ω_teach), 1_000
+t_range_itp = range(t₀, T_itp, tₙ)
+noise_aplitude = 4.5
 
-P_teach_noise = P_teach
-#P_teach_noise = P_teach + (2*rand(tₙ)-1)
+P_teach = [sum(A_teach.*cos.(Ω_teach.*t .+ Φ_teach)) + 
+            noise_aplitude*(2*rand()-1) 
+            for (i,t) in enumerate(t_range_itp)]
+P_teach_itp = linear_interpolation(t_range_itp, P_teach)
 
-system_param = SA[γ, μ, ε, η, τ, N, t₀, t₁, tₙ, P_teach_noise...]
+system_param = (γ, μ, ε, η, τ, N, T_itp, P_teach_itp)
 
 # Начальные условия системы
 x₀, y₀, ϕ₀ = 1.0, 0.0, 0.0
@@ -54,8 +55,8 @@ y₀ = y₀*ones(N)
 U₀ = SA[x₀..., y₀..., ω₀..., α₀..., ϕ₀...]
 
 # Проверка параметров и начальных условий
-println("s_param = $system_param")
-println("U₀ = $U₀")
+#println("s_param = $system_param")
+#println("U₀ = $U₀")
 @assert length(Ω_teach) == N "length of `Ω_teach` is not equal `N`"
 @assert length(A_teach) == N "length of `A_teach` is not equal `N`"
 @assert length(Φ_teach) == N "length of `Φ_teach` is not equal `N`"
@@ -70,7 +71,7 @@ println("U₀ = $U₀")
 t_calculation_start = time_ns()
 
 # Интегрирование системы
-solution = super_CPG_noise_integrate(U₀, t_SPAN, system_param)
+solution = CPG2_itp_integrate(U₀, t_SPAN, system_param)
 t_sol = solution.t
 
 elapsed_time = elapsed_time_string(time_ns()-t_calculation_start)
@@ -95,7 +96,7 @@ end
 fig = Figure(resolution=PLOT_RES)
 
 ax_error = Axis(fig[1,1], 
-    title="error(t)",
+    title="noise aplitude = $(noise_aplitude)",
     yscale=log10,
     xlabel="t",
     ylabel="error")

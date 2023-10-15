@@ -109,12 +109,13 @@ end
 
 # Algorithm
 
-Function calculates mean time difference between maximums, mean time difference between minimums and avereges them.
+Function calculates mean time difference between maximums, 
+mean time difference between minimums and avereges them.
 Throws error if there is less then 2 of maximums or minimums."""
 function mesure_period(seq, t_seq)
     times_max = times_of_maxes(seq, t_seq)
     times_min = times_of_mins(seq, t_seq)
-    (length(times_max) < 2) && (length(times_min) < 2) && error("Not enough maxes nor minimums to calc mean period") 
+    (length(times_max) < 2) && (length(times_min) < 2) && return NaN
     T = Vector{Float64}()
     (length(times_max) < 2) || push!(mean(diff(times_max))) 
     (length(times_min) < 2) || push!(mean(diff(times_min))) 
