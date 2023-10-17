@@ -1,6 +1,7 @@
 #=
 Обучение модели CPG №2 для произвольного периолического сигнала
-
+Результат: шум в среднем не влиял не обучение, но появился разброс 
+    по времени обучения в зависимости от реализации
 =#
 
 include("../src/oscillator_model.jl")
@@ -32,16 +33,10 @@ t_SPAN = [t₀, t₁]
 A_teach = [0.8, 1.0,-1.4,-0.5]
 Φ_teach = [0.0, 0.0, 0.0, 0.0]
 
-# Создание функции интерполяции шумного обучающего сигнала
-# Эта функция потом пойдет как параметр системы
-T_itp, tₙ = 2π/minimum(Ω_teach), 1_000
-t_range_itp = range(t₀, T_itp, tₙ)
-noise_aplitude = 4.5
-
-P_teach = [sum(A_teach.*cos.(Ω_teach.*t .+ Φ_teach)) + 
-            noise_aplitude*(2*rand()-1) 
-            for (i,t) in enumerate(t_range_itp)]
-P_teach_itp = linear_interpolation(t_range_itp, P_teach)
+# Интерполяция гармонического сигнала с шумом
+T_itp, Nₜ, noise_aplitude = 2π/minimum(Ω_teach), 1_000, 6.0
+ipt_param = (0, T_itp, Nₜ, N, noise_aplitude, Ω_teach..., A_teach..., Φ_teach...)
+P_teach_itp = generate_cos_itp(ipt_param)
 
 system_param = (γ, μ, ε, η, τ, N, T_itp, P_teach_itp)
 
@@ -97,7 +92,7 @@ fig = Figure(resolution=PLOT_RES)
 
 ax_error = Axis(fig[1,1], 
     title="noise aplitude = $(noise_aplitude)",
-    yscale=log10,
+    #yscale=log10,
     xlabel="t",
     ylabel="error")
 ax_ω = Axis(fig[2,1], 

@@ -122,3 +122,24 @@ function mesure_period(seq, t_seq)
     return mean(T)
 end
 
+function generate_square_itp(itp_param)
+    t₀, t₁, tₙ, T, D, A, ξ = itp_param
+    t_range = range(t₀, t₁, tₙ)
+    A₁, A₂ = 2*A*(1-D), -2*A*D
+    func(t) = (T*(1-D)/2 ≤ t ≤ T*(1+D)/2) ? A₁ : A₂
+    func_noisy(t) = func(t) + ξ*(2*rand()-1)
+    signal_noisy = func_noisy.(t_range)
+    return linear_interpolation(t_range, signal_noisy)
+end
+
+function generate_cos_itp(itp_param)
+    t₀, t₁, tₙ, N, ξ = itp_param[1:5]
+    Ω_teach = itp_param[0N+6:1N+5]
+    A_teach = itp_param[1N+6:2N+5]
+    Φ_teach = itp_param[2N+6:3N+5]
+    t_range = range(t₀, t₁, tₙ)
+    func(t) = sum(A_teach.*cos.(Ω_teach.*t .+ Φ_teach))
+    func_noisy(t) = func(t) + ξ*(2*rand()-1)
+    signal_noisy = func_noisy.(t_range)
+    return linear_interpolation(t_range, signal_noisy)
+end
